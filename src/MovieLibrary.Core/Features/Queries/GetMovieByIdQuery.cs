@@ -1,9 +1,9 @@
 ﻿using MediatR;
-using MovieLibrary.Data.Entities;
+using MovieLibrary.Core.ViewModels;
 
 namespace MovieLibrary.Core.Features.Queries
 {
-    public class GetMovieByIdQuery : IRequest<Movie>
+    public class GetMovieByIdQuery : IRequest<MovieViewModel>
     {
         public int MovieId { get; set; }
 

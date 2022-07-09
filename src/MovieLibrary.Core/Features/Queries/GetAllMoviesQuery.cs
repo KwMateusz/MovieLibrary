@@ -1,10 +1,10 @@
 ﻿using MediatR;
-using MovieLibrary.Data.Entities;
+using MovieLibrary.Core.ViewModels;
 using System.Collections.Generic;
 
 namespace MovieLibrary.Core.Features.Queries
 {
-    public class GetAllMoviesQuery : IRequest<IEnumerable<Movie>>
+    public class GetAllMoviesQuery : IRequest<IEnumerable<MovieViewModel>>
     {
     }
 }

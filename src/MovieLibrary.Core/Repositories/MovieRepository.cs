@@ -39,5 +39,10 @@ namespace MovieLibrary.Core.Repositories
         {
             return await ((MovieLibraryContext)_context).Movies.Include(x => x.MovieCategories).ThenInclude(mc => mc.Category).ToListAsync();
         }
+
+        public override async Task<Movie> GetByIdAsync(int movieId)
+        {
+            return await ((MovieLibraryContext)_context).Movies.Include(x => x.MovieCategories).ThenInclude(mc => mc.Category).FirstAsync(c => c.Id == movieId);
+        }
     }
 }
