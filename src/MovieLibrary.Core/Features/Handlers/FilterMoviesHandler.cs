@@ -7,6 +7,7 @@ using MovieLibrary.Data;
 using MovieLibrary.Data.Entities;
 using MovieLibrary.Data.Filters;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 

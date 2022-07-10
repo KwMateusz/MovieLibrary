@@ -45,18 +45,6 @@ namespace MovieLibrary.Core
             }
         }
 
-        public IRepository<MovieCategory> MovieCategoryRepository
-        {
-            get
-            {
-                if (this._movieCategoryRepository == null)
-                {
-                    this._movieCategoryRepository = new MovieCategoryRepository(_context);
-                }
-                return _movieCategoryRepository;
-            }
-        }
-
         public async Task<int> SaveAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             return await _context.SaveChangesAsync(cancellationToken);

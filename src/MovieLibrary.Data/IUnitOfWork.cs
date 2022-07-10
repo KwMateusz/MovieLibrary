@@ -10,7 +10,6 @@ namespace MovieLibrary.Data
     {
         public IRepository<Movie> MovieRepository { get; }
         public IRepository<Category> CategoryRepository { get; }
-        public IRepository<MovieCategory> MovieCategoryRepository { get; }
         Task<int> SaveAsync(CancellationToken cancellationToken);
     }
 }

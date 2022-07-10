@@ -3,6 +3,8 @@ using MovieLibrary.Data.Filters;
 using MovieLibrary.Data.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace MovieLibrary.Core.Repositories
@@ -24,6 +26,11 @@ namespace MovieLibrary.Core.Repositories
         public virtual async Task<TEntity> GetByIdAsync(int id)
         {
             return await _context.Set<TEntity>().FindAsync(id);
+        }
+
+        public virtual async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await _context.Set<TEntity>().Where(predicate).ToListAsync();
         }
 
         public virtual async Task AddAsync(TEntity entity)

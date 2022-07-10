@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using MovieLibrary.Core.Exceptions;
 using MovieLibrary.Core.Features.Commands;
 using MovieLibrary.Data;
 using System.Threading;
@@ -17,9 +18,12 @@ namespace MovieLibrary.Core.Features.Handlers
 
         public async Task<Unit> Handle(RemoveMovieCommand request, CancellationToken cancellationToken)
         {
-            var category = await _unitOfWork.MovieRepository.GetByIdAsync(request.MovieId);
-            await _unitOfWork.MovieRepository.RemoveAsync(category);
+            var movie = await _unitOfWork.MovieRepository.GetByIdAsync(request.MovieId);
 
+            if (movie == null)
+                throw new MovieException($"Movie wtih id {request.MovieId} does not exist.");
+
+            await _unitOfWork.MovieRepository.RemoveAsync(movie);
             await _unitOfWork.SaveAsync(cancellationToken);
 
             return Unit.Value;
