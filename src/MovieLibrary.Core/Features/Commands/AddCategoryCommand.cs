@@ -1,14 +1,13 @@
 ﻿using MediatR;
 
-namespace MovieLibrary.Core.Features.Commands
-{
-    public class AddCategoryCommand : IRequest
-    {
-        public string Name { get; set; }
+namespace MovieLibrary.Core.Features.Commands;
 
-        public AddCategoryCommand(string name)
-        {
-            Name = name;
-        }
+public class AddCategoryCommand : IRequest
+{
+    public string Name { get; set; }
+
+    public AddCategoryCommand(string name)
+    {
+        Name = name;
     }
 }

@@ -1,6 +1,5 @@
-﻿namespace MovieLibrary.Core
+﻿namespace MovieLibrary.Core;
+
+public class MediatREntryPoint
 {
-    public class MediatREntryPoint
-    {
-    }
 }

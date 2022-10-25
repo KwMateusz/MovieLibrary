@@ -1,15 +1,14 @@
 ﻿using MediatR;
 using MovieLibrary.Core.ViewModels;
 
-namespace MovieLibrary.Core.Features.Queries
-{
-    public class GetMovieByIdQuery : IRequest<MovieViewModel>
-    {
-        public int MovieId { get; set; }
+namespace MovieLibrary.Core.Features.Queries;
 
-        public GetMovieByIdQuery(int categoryId)
-        {
-            MovieId = categoryId;
-        }
+public class GetMovieByIdQuery : IRequest<MovieViewModel>
+{
+    public int MovieId { get; set; }
+
+    public GetMovieByIdQuery(int categoryId)
+    {
+        MovieId = categoryId;
     }
 }

@@ -1,13 +1,12 @@
 ﻿using FluentValidation;
 using MovieLibrary.Core.Features.Commands;
 
-namespace MovieLibrary.Core.Validators
+namespace MovieLibrary.Core.Validators;
+
+public class RemoveMovieCommandValidator : AbstractValidator<RemoveMovieCommand>
 {
-    public class RemoveMovieCommandValidator : AbstractValidator<RemoveMovieCommand>
+    public RemoveMovieCommandValidator()
     {
-        public RemoveMovieCommandValidator()
-        {
-            RuleFor(c => c.MovieId).NotNull().GreaterThan(0);
-        }
+        RuleFor(c => c.MovieId).NotNull().GreaterThan(0);
     }
 }

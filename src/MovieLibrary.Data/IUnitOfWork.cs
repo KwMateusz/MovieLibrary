@@ -4,12 +4,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MovieLibrary.Data
+namespace MovieLibrary.Data;
+
+public interface IUnitOfWork : IDisposable
 {
-    public interface IUnitOfWork : IDisposable
-    {
-        public IRepository<Movie> MovieRepository { get; }
-        public IRepository<Category> CategoryRepository { get; }
-        Task<int> SaveAsync(CancellationToken cancellationToken);
-    }
+    public IRepository<Movie> MovieRepository { get; }
+    public IRepository<Category> CategoryRepository { get; }
+
+    Task<int> SaveAsync(CancellationToken cancellationToken);
 }

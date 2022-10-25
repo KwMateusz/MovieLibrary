@@ -1,14 +1,13 @@
 ﻿using MediatR;
 
-namespace MovieLibrary.Core.Features.Commands
-{
-    public class RemoveCategoryCommand : IRequest
-    {
-        public int CategoryId { get; set; }
+namespace MovieLibrary.Core.Features.Commands;
 
-        public RemoveCategoryCommand(int categoryId)
-        {
-            CategoryId = categoryId;
-        }
+public class RemoveCategoryCommand : IRequest
+{
+    public int CategoryId { get; set; }
+
+    public RemoveCategoryCommand(int categoryId)
+    {
+        CategoryId = categoryId;
     }
 }

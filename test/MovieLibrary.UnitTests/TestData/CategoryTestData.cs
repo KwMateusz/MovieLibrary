@@ -1,27 +1,26 @@
 ﻿using MovieLibrary.Data.Entities;
 using System.Collections.Generic;
 
-namespace MovieLibrary.UnitTests.TestData
+namespace MovieLibrary.UnitTests.TestData;
+
+internal static class CategoryTestData
 {
-    internal static class CategoryTestData
+    public static List<Category> GetCategoryTestData()
     {
-        public static List<Category> GetCategoryTestData()
+        return new List<Category>
         {
-            return new List<Category>
+            new Category
             {
-                new Category
-                {
-                    Id = 1,
-                    Name= "Action",
-                    MovieCategories = new List<MovieCategory>()
-                },
-                new Category
-                {
-                    Id = 2,
-                    Name= "Adventure",
-                    MovieCategories = new List<MovieCategory>()
-                }
-            };
-        }
+                Id = 1,
+                Name= "Action",
+                MovieCategories = new List<MovieCategory>()
+            },
+            new Category
+            {
+                Id = 2,
+                Name= "Adventure",
+                MovieCategories = new List<MovieCategory>()
+            }
+        };
     }
 }

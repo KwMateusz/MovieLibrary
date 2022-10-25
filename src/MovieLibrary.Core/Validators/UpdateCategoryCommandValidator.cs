@@ -1,14 +1,13 @@
 ﻿using FluentValidation;
 using MovieLibrary.Core.Features.Commands;
 
-namespace MovieLibrary.Core.Validators
+namespace MovieLibrary.Core.Validators;
+
+public class UpdateCategoryCommandValidator : AbstractValidator<UpdateCategoryCommand>
 {
-    public class UpdateCategoryCommandValidator : AbstractValidator<UpdateCategoryCommand>
+    public UpdateCategoryCommandValidator()
     {
-        public UpdateCategoryCommandValidator()
-        {
-            RuleFor(c => c.CategoryId).GreaterThan(0);
-            RuleFor(c => c.Name).NotNull().NotEmpty();
-        }
+        RuleFor(c => c.CategoryId).GreaterThan(0);
+        RuleFor(c => c.Name).NotNull().NotEmpty();
     }
 }

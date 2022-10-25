@@ -5,28 +5,27 @@ using MovieLibrary.Data;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MovieLibrary.Core.Features.Handlers
+namespace MovieLibrary.Core.Features.Handlers;
+
+public class RemoveCategoryHandler : IRequestHandler<RemoveCategoryCommand>
 {
-    public class RemoveCategoryHandler : IRequestHandler<RemoveCategoryCommand>
+    private IUnitOfWork _unitOfWork;
+
+    public RemoveCategoryHandler(IUnitOfWork unitOfWork)
     {
-        private IUnitOfWork _unitOfWork;
+        _unitOfWork = unitOfWork;
+    }
 
-        public RemoveCategoryHandler(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
+    public async Task<Unit> Handle(RemoveCategoryCommand request, CancellationToken cancellationToken)
+    {
+        var category = await _unitOfWork.CategoryRepository.GetByIdAsync(request.CategoryId);
 
-        public async Task<Unit> Handle(RemoveCategoryCommand request, CancellationToken cancellationToken)
-        {
-            var category = await _unitOfWork.CategoryRepository.GetByIdAsync(request.CategoryId);
+        if (category == null)
+            throw new CategoryException($"Category wtih id {request.CategoryId} does not exist.");
 
-            if (category == null)
-                throw new CategoryException($"Category wtih id {request.CategoryId} does not exist.");
+        await _unitOfWork.CategoryRepository.RemoveAsync(category);
+        await _unitOfWork.SaveAsync(cancellationToken);
 
-            await _unitOfWork.CategoryRepository.RemoveAsync(category);
-            await _unitOfWork.SaveAsync(cancellationToken);
-
-            return Unit.Value;
-        }
+        return Unit.Value;
     }
 }

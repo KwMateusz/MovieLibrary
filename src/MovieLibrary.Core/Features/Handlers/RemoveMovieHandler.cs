@@ -5,28 +5,27 @@ using MovieLibrary.Data;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MovieLibrary.Core.Features.Handlers
+namespace MovieLibrary.Core.Features.Handlers;
+
+public class RemoveMovieHandler : IRequestHandler<RemoveMovieCommand>
 {
-    public class RemoveMovieHandler : IRequestHandler<RemoveMovieCommand>
+    private IUnitOfWork _unitOfWork;
+
+    public RemoveMovieHandler(IUnitOfWork unitOfWork)
     {
-        private IUnitOfWork _unitOfWork;
+        _unitOfWork = unitOfWork;
+    }
 
-        public RemoveMovieHandler(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
+    public async Task<Unit> Handle(RemoveMovieCommand request, CancellationToken cancellationToken)
+    {
+        var movie = await _unitOfWork.MovieRepository.GetByIdAsync(request.MovieId);
 
-        public async Task<Unit> Handle(RemoveMovieCommand request, CancellationToken cancellationToken)
-        {
-            var movie = await _unitOfWork.MovieRepository.GetByIdAsync(request.MovieId);
+        if (movie == null)
+            throw new MovieException($"Movie wtih id {request.MovieId} does not exist.");
 
-            if (movie == null)
-                throw new MovieException($"Movie wtih id {request.MovieId} does not exist.");
+        await _unitOfWork.MovieRepository.RemoveAsync(movie);
+        await _unitOfWork.SaveAsync(cancellationToken);
 
-            await _unitOfWork.MovieRepository.RemoveAsync(movie);
-            await _unitOfWork.SaveAsync(cancellationToken);
-
-            return Unit.Value;
-        }
+        return Unit.Value;
     }
 }

@@ -9,56 +9,55 @@ using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MovieLibrary.UnitTests.CategoryHandlers
+namespace MovieLibrary.UnitTests.CategoryHandlers;
+
+public class UpdateCategoryHandlerTests
 {
-    public class UpdateCategoryHandlerTests
+    private Mock<IUnitOfWork> _mockUnitOfWork;
+
+    [SetUp]
+    public void SetUp()
     {
-        private Mock<IUnitOfWork> _mockUnitOfWork;
+        _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
+    }
 
-        [SetUp]
-        public void SetUp()
+    [TestCase(1, "Comedy")]
+    [TestCase(2, "Comedy")]
+    [Test]
+    public async Task UpdateCategoryTest_ValidCategoryId_CategoryUpdated(int id, string name)
+    {
+        var handler = new UpdateCategoryHandler(_mockUnitOfWork.Object);
+        var result = await handler.Handle(new UpdateCategoryCommand(id, name), CancellationToken.None);
+        var category = _mockUnitOfWork.Object.CategoryRepository.GetByIdAsync(id).Result;
+
+        Assert.Multiple(() =>
         {
-            _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
-        }
+            Assert.That(result, Is.EqualTo(Unit.Value));
+            Assert.That(category.Name, Is.EqualTo(name));
+        });
+    }
 
-        [TestCase(1, "Comedy")]
-        [TestCase(2, "Comedy")]
-        [Test]
-        public async Task UpdateCategoryTest_ValidCategoryId_CategoryUpdated(int id, string name)
-        {
-            var handler = new UpdateCategoryHandler(_mockUnitOfWork.Object);
-            var result = await handler.Handle(new UpdateCategoryCommand(id, name), CancellationToken.None);
-            var category = _mockUnitOfWork.Object.CategoryRepository.GetByIdAsync(id).Result;
+    [TestCase(33, "Comedy")]
+    [Test]
+    public void UpdateCategoryTest_InvalidCategoryId__ThrowsCategoryException(int id, string name)
+    {
+        var handler = new UpdateCategoryHandler(_mockUnitOfWork.Object);
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(result, Is.EqualTo(Unit.Value));
-                Assert.That(category.Name, Is.EqualTo(name));
-            });
-        }
+        Assert.That(
+            async () => await handler.Handle(new UpdateCategoryCommand(id, name), CancellationToken.None),
+            Throws.TypeOf<CategoryException>()
+        );
+    }
 
-        [TestCase(33, "Comedy")]
-        [Test]
-        public void UpdateCategoryTest_InvalidCategoryId__ThrowsCategoryException(int id, string name)
-        {
-            var handler = new UpdateCategoryHandler(_mockUnitOfWork.Object);
+    [TestCase(2, "Action")]
+    [Test]
+    public void UpdateCategoryTest_CategoryAlreadyExists__ThrowsCategoryException(int id, string name)
+    {
+        var handler = new UpdateCategoryHandler(_mockUnitOfWork.Object);
 
-            Assert.That(
-                async () => await handler.Handle(new UpdateCategoryCommand(id, name), CancellationToken.None),
-                Throws.TypeOf<CategoryException>()
-            );
-        }
-
-        [TestCase(2, "Action")]
-        [Test]
-        public void UpdateCategoryTest_CategoryAlreadyExists__ThrowsCategoryException(int id, string name)
-        {
-            var handler = new UpdateCategoryHandler(_mockUnitOfWork.Object);
-
-            Assert.That(
-                async () => await handler.Handle(new UpdateCategoryCommand(id, name), CancellationToken.None),
-                Throws.TypeOf<CategoryException>()
-            );
-        }
+        Assert.That(
+            async () => await handler.Handle(new UpdateCategoryCommand(id, name), CancellationToken.None),
+            Throws.TypeOf<CategoryException>()
+        );
     }
 }

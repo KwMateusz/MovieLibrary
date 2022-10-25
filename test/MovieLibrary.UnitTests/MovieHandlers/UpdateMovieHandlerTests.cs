@@ -9,59 +9,58 @@ using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MovieLibrary.UnitTests.MovieHandlers
+namespace MovieLibrary.UnitTests.MovieHandlers;
+
+public class UpdateMovieHandlerTests
 {
-    public class UpdateMovieHandlerTests
+    private const string Description = "When a beautiful stranger leads computer...";
+    private const int Year = 1999;
+    private const decimal ImdbRating = 8.7M;
+    private Mock<IUnitOfWork> _mockUnitOfWork;
+
+    [SetUp]
+    public void SetUp()
     {
-        private const string Description = "When a beautiful stranger leads computer...";
-        private const int Year = 1999;
-        private const decimal ImdbRating = 8.7M;
-        private Mock<IUnitOfWork> _mockUnitOfWork;
+        _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
+    }
 
-        [SetUp]
-        public void SetUp()
+    [TestCase(1, "Whiplash")]
+    [TestCase(2, "Intouchables")]
+    [Test]
+    public async Task UpdateMovieTest_ValidMovieId_MovieUpdated(int id, string title)
+    {
+        var handler = new UpdateMovieHandler(_mockUnitOfWork.Object);
+        var result = await handler.Handle(new UpdateMovieCommand(id, title, Description, Year, ImdbRating), CancellationToken.None);
+        var movie = _mockUnitOfWork.Object.MovieRepository.GetByIdAsync(id).Result;
+
+        Assert.Multiple(() =>
         {
-            _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
-        }
+            Assert.That(result, Is.EqualTo(Unit.Value));
+            Assert.That(movie.Title, Is.EqualTo(title));
+        });
+    }
 
-        [TestCase(1, "Whiplash")]
-        [TestCase(2, "Intouchables")]
-        [Test]
-        public async Task UpdateMovieTest_ValidMovieId_MovieUpdated(int id, string title)
-        {
-            var handler = new UpdateMovieHandler(_mockUnitOfWork.Object);
-            var result = await handler.Handle(new UpdateMovieCommand(id, title, Description, Year, ImdbRating), CancellationToken.None);
-            var movie = _mockUnitOfWork.Object.MovieRepository.GetByIdAsync(id).Result;
+    [TestCase(33, "Joker")]
+    [Test]
+    public void UpdateMovieTest_InvalidMovieId_ThrowsMovieException(int id, string title)
+    {
+        var handler = new UpdateMovieHandler(_mockUnitOfWork.Object);
 
-            Assert.Multiple(() =>
-            {
-                Assert.That(result, Is.EqualTo(Unit.Value));
-                Assert.That(movie.Title, Is.EqualTo(title));
-            });
-        }
+        Assert.That(
+            async () => await handler.Handle(new UpdateMovieCommand(id, title, Description, Year, ImdbRating), CancellationToken.None),
+            Throws.TypeOf<MovieException>()
+        );
+    }
 
-        [TestCase(33, "Joker")]
-        [Test]
-        public void UpdateMovieTest_InvalidMovieId_ThrowsMovieException(int id, string title)
-        {
-            var handler = new UpdateMovieHandler(_mockUnitOfWork.Object);
+    [TestCase(3, "Harry Potter and the Sorcerer's Stone")]
+    [Test]
+    public void UpdateMovieTest_MovieAlreadyExists_ThrowsMovieException(int id, string title)
+    {
+        var handler = new UpdateMovieHandler(_mockUnitOfWork.Object);
 
-            Assert.That(
-                async () => await handler.Handle(new UpdateMovieCommand(id, title, Description, Year, ImdbRating), CancellationToken.None),
-                Throws.TypeOf<MovieException>()
-            );
-        }
-
-        [TestCase(3, "Harry Potter and the Sorcerer's Stone")]
-        [Test]
-        public void UpdateMovieTest_MovieAlreadyExists_ThrowsMovieException(int id, string title)
-        {
-            var handler = new UpdateMovieHandler(_mockUnitOfWork.Object);
-
-            Assert.That(
-                async () => await handler.Handle(new UpdateMovieCommand(id, title, Description, Year, ImdbRating), CancellationToken.None),
-                Throws.TypeOf<MovieException>()
-            );
-        }
+        Assert.That(
+            async () => await handler.Handle(new UpdateMovieCommand(id, title, Description, Year, ImdbRating), CancellationToken.None),
+            Throws.TypeOf<MovieException>()
+        );
     }
 }

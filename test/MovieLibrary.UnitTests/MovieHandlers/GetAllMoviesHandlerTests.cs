@@ -11,32 +11,31 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MovieLibrary.UnitTests.MovieHandlers
+namespace MovieLibrary.UnitTests.MovieHandlers;
+
+public class GetAllMoviesHandlerTests
 {
-    public class GetAllMoviesHandlerTests
+    private readonly IMapper _mapper;
+    private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+
+    public GetAllMoviesHandlerTests()
     {
-        private readonly IMapper _mapper;
-        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+        _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
 
-        public GetAllMoviesHandlerTests()
+        var mapperConfig = new MapperConfiguration(c =>
         {
-            _mockUnitOfWork = MockUnitOfWork.GetUnitOfWork();
+            c.AddProfile<AutoMapperProfile>();
+        });
 
-            var mapperConfig = new MapperConfiguration(c =>
-            {
-                c.AddProfile<AutoMapperProfile>();
-            });
+        _mapper = mapperConfig.CreateMapper();
+    }
 
-            _mapper = mapperConfig.CreateMapper();
-        }
+    [Test]
+    public async Task GetAllMoviesTest_Default_ReturnsCollectionOfMovies()
+    {
+        var handler = new GetAllMoviesHandler(_mockUnitOfWork.Object, _mapper);
+        var result = await handler.Handle(new GetAllMoviesQuery(), CancellationToken.None);
 
-        [Test]
-        public async Task GetAllMoviesTest_Default_ReturnsCollectionOfMovies()
-        {
-            var handler = new GetAllMoviesHandler(_mockUnitOfWork.Object, _mapper);
-            var result = await handler.Handle(new GetAllMoviesQuery(), CancellationToken.None);
-
-            Assert.That(result, Is.InstanceOf<IEnumerable<MovieViewModel>>());
-        }
+        Assert.That(result, Is.InstanceOf<IEnumerable<MovieViewModel>>());
     }
 }

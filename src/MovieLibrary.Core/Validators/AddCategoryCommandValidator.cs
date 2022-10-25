@@ -1,13 +1,12 @@
 ﻿using FluentValidation;
 using MovieLibrary.Core.Features.Commands;
 
-namespace MovieLibrary.Core.Validators
+namespace MovieLibrary.Core.Validators;
+
+public class AddCategoryCommandValidator : AbstractValidator<AddCategoryCommand>
 {
-    public class AddCategoryCommandValidator : AbstractValidator<AddCategoryCommand>
+    public AddCategoryCommandValidator()
     {
-        public AddCategoryCommandValidator()
-        {
-            RuleFor(c => c.Name).NotNull().NotEmpty();
-        }
+        RuleFor(c => c.Name).NotNull().NotEmpty();
     }
 }

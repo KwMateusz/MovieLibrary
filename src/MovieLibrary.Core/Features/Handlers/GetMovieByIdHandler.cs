@@ -6,22 +6,21 @@ using MovieLibrary.Data;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MovieLibrary.Core.Features.Handlers
+namespace MovieLibrary.Core.Features.Handlers;
+
+public class GetMovieByIdHandler : IRequestHandler<GetMovieByIdQuery, MovieViewModel>
 {
-    public class GetMovieByIdHandler : IRequestHandler<GetMovieByIdQuery, MovieViewModel>
+    private IUnitOfWork _unitOfWork;
+    private IMapper _mapper;
+
+    public GetMovieByIdHandler(IUnitOfWork unitOfWork, IMapper mapper)
     {
-        private IUnitOfWork _unitOfWork;
-        private IMapper _mapper;
+        _unitOfWork = unitOfWork;
+        _mapper = mapper;
+    }
 
-        public GetMovieByIdHandler(IUnitOfWork unitOfWork, IMapper mapper)
-        {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
-
-        public async Task<MovieViewModel> Handle(GetMovieByIdQuery request, CancellationToken cancellationToken)
-        {
-            return _mapper.Map<MovieViewModel>(await _unitOfWork.MovieRepository.GetByIdAsync(request.MovieId));
-        }
+    public async Task<MovieViewModel> Handle(GetMovieByIdQuery request, CancellationToken cancellationToken)
+    {
+        return _mapper.Map<MovieViewModel>(await _unitOfWork.MovieRepository.GetByIdAsync(request.MovieId));
     }
 }

@@ -6,66 +6,56 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MovieLibrary.Core
+namespace MovieLibrary.Core;
+
+public class UnitOfWork : IUnitOfWork
 {
-    public class UnitOfWork : IUnitOfWork
+    private readonly MovieLibraryContext _context;
+    private IRepository<Movie> _movieRepository;
+    private IRepository<Category> _categoryRepository;
+    private bool _disposed = false;
+
+    public UnitOfWork(MovieLibraryContext movieLibraryContext)
     {
-        private MovieLibraryContext _context;
-        private IRepository<Movie> _movieRepository;
-        private IRepository<Category> _categoryRepository;
-        private IRepository<MovieCategory> _movieCategoryRepository;
-        private bool _disposed = false;
+        _context = movieLibraryContext;
+    }
 
-        public UnitOfWork(MovieLibraryContext movieLibraryContext)
+    public IRepository<Movie> MovieRepository
+    {
+        get
         {
-            _context = movieLibraryContext;
+            return _movieRepository ??= new MovieRepository(_context);
         }
+    }
 
-        public IRepository<Movie> MovieRepository
+    public IRepository<Category> CategoryRepository
+    {
+        get
         {
-            get
+            return _categoryRepository ??= new CategoryRepository(_context);
+        }
+    }
+
+    public async Task<int> SaveAsync(CancellationToken cancellationToken = default(CancellationToken))
+    {
+        return await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
             {
-                if (this._movieRepository == null)
-                {
-                    this._movieRepository = new MovieRepository(_context);
-                }
-                return _movieRepository;
+                _context.Dispose();
             }
         }
-
-        public IRepository<Category> CategoryRepository
-        {
-            get
-            {
-                if (this._categoryRepository == null)
-                {
-                    this._categoryRepository = new CategoryRepository(_context);
-                }
-                return _categoryRepository;
-            }
-        }
-
-        public async Task<int> SaveAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return await _context.SaveChangesAsync(cancellationToken);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this._disposed)
-            {
-                if (disposing)
-                {
-                    _context.Dispose();
-                }
-            }
-            this._disposed = true;
-        }
+        _disposed = true;
     }
 }
