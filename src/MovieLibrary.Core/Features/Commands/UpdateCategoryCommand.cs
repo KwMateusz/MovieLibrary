@@ -2,14 +2,4 @@
 
 namespace MovieLibrary.Core.Features.Commands;
 
-public class UpdateCategoryCommand : IRequest
-{
-    public int CategoryId { get; set; }
-    public string Name { get; set; }
-
-    public UpdateCategoryCommand(int categoryId, string name)
-    {
-        CategoryId = categoryId;
-        Name = name;
-    }
-}
+public record UpdateCategoryCommand(int CategoryId, string Name) : IRequest;

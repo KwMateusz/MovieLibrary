@@ -12,20 +12,11 @@ using System.Threading.Tasks;
 
 namespace MovieLibrary.Core.Features.Handlers;
 
-public class FilterMoviesHandler : IRequestHandler<FilterMoviesQuery, (IEnumerable<MovieViewModel>, object)>
+public record FilterMoviesHandler(IUnitOfWork UnitOfWork, IMapper Mapper) : IRequestHandler<FilterMoviesQuery, (IEnumerable<MovieViewModel>, object)>
 {
-    private IUnitOfWork _unitOfWork;
-    private IMapper _mapper;
-
-    public FilterMoviesHandler(IUnitOfWork unitOfWork, IMapper mapper)
-    {
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-    }
-
     public async Task<(IEnumerable<MovieViewModel>, object)> Handle(FilterMoviesQuery request, CancellationToken cancellationToken)
     {
-        var filteredResult = await ((MovieRepository)_unitOfWork.MovieRepository).FilterAsync(request.Parameters);
+        var filteredResult = await ((MovieRepository)UnitOfWork.MovieRepository).FilterAsync(request.Parameters);
         var resultAsPagedList = (PagedList<Movie>)filteredResult;
         object metadata = new
         {
@@ -37,7 +28,7 @@ public class FilterMoviesHandler : IRequestHandler<FilterMoviesQuery, (IEnumerab
             resultAsPagedList.HasPrevious
         };
 
-        var result = _mapper.Map<IEnumerable<MovieViewModel>>(filteredResult);
+        var result = Mapper.Map<IEnumerable<MovieViewModel>>(filteredResult);
         return (result, metadata);
     }
 }

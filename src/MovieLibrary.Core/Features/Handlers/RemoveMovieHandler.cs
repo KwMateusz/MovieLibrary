@@ -7,24 +7,17 @@ using System.Threading.Tasks;
 
 namespace MovieLibrary.Core.Features.Handlers;
 
-public class RemoveMovieHandler : IRequestHandler<RemoveMovieCommand>
+public record RemoveMovieHandler(IUnitOfWork UnitOfWork) : IRequestHandler<RemoveMovieCommand>
 {
-    private IUnitOfWork _unitOfWork;
-
-    public RemoveMovieHandler(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<Unit> Handle(RemoveMovieCommand request, CancellationToken cancellationToken)
     {
-        var movie = await _unitOfWork.MovieRepository.GetByIdAsync(request.MovieId);
+        var movie = await UnitOfWork.MovieRepository.GetByIdAsync(request.MovieId);
 
         if (movie == null)
             throw new MovieException($"Movie wtih id {request.MovieId} does not exist.");
 
-        await _unitOfWork.MovieRepository.RemoveAsync(movie);
-        await _unitOfWork.SaveAsync(cancellationToken);
+        await UnitOfWork.MovieRepository.RemoveAsync(movie);
+        await UnitOfWork.SaveAsync(cancellationToken);
 
         return Unit.Value;
     }

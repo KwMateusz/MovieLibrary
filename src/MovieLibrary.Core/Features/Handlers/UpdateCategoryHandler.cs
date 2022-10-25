@@ -9,29 +9,22 @@ using System.Threading.Tasks;
 
 namespace MovieLibrary.Core.Features.Handlers;
 
-public class UpdateCategoryHandler : IRequestHandler<UpdateCategoryCommand>
+public record UpdateCategoryHandler(IUnitOfWork UnitOfWork) : IRequestHandler<UpdateCategoryCommand>
 {
-    private IUnitOfWork _unitOfWork;
-
-    public UpdateCategoryHandler(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<Unit> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
     {
-        var category = await _unitOfWork.CategoryRepository.GetByIdAsync(request.CategoryId);
+        var category = await UnitOfWork.CategoryRepository.GetByIdAsync(request.CategoryId);
         if (category == null)
             throw new CategoryException($"Category wtih id {request.CategoryId} does not exist.");
 
-        var categories = new List<Category>(await _unitOfWork.CategoryRepository.FindAsync(x => x.Name == request.Name));
+        var categories = new List<Category>(await UnitOfWork.CategoryRepository.FindAsync(x => x.Name == request.Name));
         if (categories.Count != 0)
             throw new CategoryException($"Category {request.Name} already exists.");
 
         category.Name = request.Name;
 
-        await _unitOfWork.CategoryRepository.UpdateAsync(category);
-        await _unitOfWork.SaveAsync(cancellationToken);
+        await UnitOfWork.CategoryRepository.UpdateAsync(category);
+        await UnitOfWork.SaveAsync(cancellationToken);
 
         return Unit.Value;
     }

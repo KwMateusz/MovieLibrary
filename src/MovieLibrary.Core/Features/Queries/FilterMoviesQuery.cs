@@ -5,12 +5,4 @@ using System.Collections.Generic;
 
 namespace MovieLibrary.Core.Features.Queries;
 
-public class FilterMoviesQuery : IRequest<(IEnumerable<MovieViewModel>, object)>
-{
-    public MovieParameters Parameters { get; set; }
-
-    public FilterMoviesQuery(MovieParameters parameters)
-    {
-        Parameters = parameters;
-    }
-}
+public record FilterMoviesQuery(MovieParameters Parameters) : IRequest<(IEnumerable<MovieViewModel>, object)>;

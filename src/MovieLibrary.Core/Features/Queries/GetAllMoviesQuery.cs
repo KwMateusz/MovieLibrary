@@ -4,6 +4,4 @@ using System.Collections.Generic;
 
 namespace MovieLibrary.Core.Features.Queries;
 
-public class GetAllMoviesQuery : IRequest<IEnumerable<MovieViewModel>>
-{
-}
+public record GetAllMoviesQuery : IRequest<IEnumerable<MovieViewModel>>;

@@ -9,19 +9,10 @@ using System.Threading.Tasks;
 
 namespace MovieLibrary.Core.Features.Handlers;
 
-public class GetAllCategoriesHandler : IRequestHandler<GetAllCategoriesQuery, IEnumerable<CategoryViewModel>>
+public record GetAllCategoriesHandler(IUnitOfWork UnitOfWork, IMapper Mapper) : IRequestHandler<GetAllCategoriesQuery, IEnumerable<CategoryViewModel>>
 {
-    private IUnitOfWork _unitOfWork;
-    private IMapper _mapper;
-
-    public GetAllCategoriesHandler(IUnitOfWork unitOfWork, IMapper mapper)
-    {
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-    }
-
     public async Task<IEnumerable<CategoryViewModel>> Handle(GetAllCategoriesQuery request, CancellationToken cancellationToken)
     {
-        return _mapper.Map<IEnumerable<CategoryViewModel>>(await _unitOfWork.CategoryRepository.GetAllAsync());
+        return Mapper.Map<IEnumerable<CategoryViewModel>>(await UnitOfWork.CategoryRepository.GetAllAsync());
     }
 }

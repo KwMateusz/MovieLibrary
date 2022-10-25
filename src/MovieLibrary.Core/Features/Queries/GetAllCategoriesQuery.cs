@@ -4,6 +4,4 @@ using System.Collections.Generic;
 
 namespace MovieLibrary.Core.Features.Queries;
 
-public class GetAllCategoriesQuery : IRequest<IEnumerable<CategoryViewModel>>
-{
-}
+public record GetAllCategoriesQuery : IRequest<IEnumerable<CategoryViewModel>>;

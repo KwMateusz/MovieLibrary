@@ -7,24 +7,17 @@ using System.Threading.Tasks;
 
 namespace MovieLibrary.Core.Features.Handlers;
 
-public class RemoveCategoryHandler : IRequestHandler<RemoveCategoryCommand>
+public record RemoveCategoryHandler(IUnitOfWork UnitOfWork) : IRequestHandler<RemoveCategoryCommand>
 {
-    private IUnitOfWork _unitOfWork;
-
-    public RemoveCategoryHandler(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<Unit> Handle(RemoveCategoryCommand request, CancellationToken cancellationToken)
     {
-        var category = await _unitOfWork.CategoryRepository.GetByIdAsync(request.CategoryId);
+        var category = await UnitOfWork.CategoryRepository.GetByIdAsync(request.CategoryId);
 
         if (category == null)
             throw new CategoryException($"Category wtih id {request.CategoryId} does not exist.");
 
-        await _unitOfWork.CategoryRepository.RemoveAsync(category);
-        await _unitOfWork.SaveAsync(cancellationToken);
+        await UnitOfWork.CategoryRepository.RemoveAsync(category);
+        await UnitOfWork.SaveAsync(cancellationToken);
 
         return Unit.Value;
     }

@@ -9,27 +9,20 @@ using System.Threading.Tasks;
 
 namespace MovieLibrary.Core.Features.Handlers;
 
-public class AddCategoryHandler : IRequestHandler<AddCategoryCommand>
+public record AddCategoryHandler(IUnitOfWork UnitOfWork) : IRequestHandler<AddCategoryCommand>
 {
-    private IUnitOfWork _unitOfWork;
-
-    public AddCategoryHandler(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
-
     public async Task<Unit> Handle(AddCategoryCommand request, CancellationToken cancellationToken)
     {
-        var categories = new List<Category>(await _unitOfWork.CategoryRepository.FindAsync(x => x.Name == request.Name));
+        var categories = new List<Category>(await UnitOfWork.CategoryRepository.FindAsync(x => x.Name == request.Name));
         if (categories.Count != 0)
             throw new CategoryException($"Category {request.Name} already exists!");
 
-        await _unitOfWork.CategoryRepository.AddAsync(new Category
+        await UnitOfWork.CategoryRepository.AddAsync(new Category
         {
             Name = request.Name
         });
 
-        await _unitOfWork.SaveAsync(cancellationToken);
+        await UnitOfWork.SaveAsync(cancellationToken);
 
         return Unit.Value;
     }
